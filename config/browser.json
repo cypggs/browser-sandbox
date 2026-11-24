@@ -1,0 +1,24 @@
+{
+  "display": ":99",
+  "viewport": {
+    "width": 1920,
+    "height": 1080,
+    "depth": 24
+  },
+  "userDataDir": "/data/chrome-profile",
+  "downloadsDir": "/data/downloads",
+  "screenshotsDir": "/data/screenshots",
+  "cdpPort": 9222,
+  "startupUrl": "about:blank",
+  "extraArgs": [
+    "--disable-gpu",
+    "--password-store=basic",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-background-timer-throttling",
+    "--disable-backgrounding-occluded-windows",
+    "--disable-renderer-backgrounding",
+    "--disable-features=Translate,OptimizationHints",
+    "--start-maximized"
+  ]
+}

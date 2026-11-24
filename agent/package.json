@@ -1,0 +1,23 @@
+{
+  "name": "browser-sandbox-agent",
+  "version": "1.0.0",
+  "description": "Playwright AI Control API, SDK, and MCP Server for Browser Sandbox",
+  "main": "dist/server.js",
+  "types": "dist/sdk.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "mcp:stdio": "node dist/mcp-stdio.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "express": "^4.21.2",
+    "playwright-core": "^1.52.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.15.0",
+    "typescript": "^5.8.3"
+  }
+}

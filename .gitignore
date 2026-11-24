@@ -1,0 +1,30 @@
+# Environment secrets & local server configs
+.env
+.env.local
+.env.*.local
+config/nginx/*.conf
+!config/nginx/browser-sandbox.conf.example
+
+# Persistent browser profile, logins, cookies, downloads & screenshots (NEVER commit!)
+data/chrome-profile/*
+data/downloads/*
+data/screenshots/*
+!data/chrome-profile/.gitkeep
+!data/downloads/.gitkeep
+!data/screenshots/.gitkeep
+
+# Logs & backups
+logs/*
+!logs/.gitkeep
+*.log
+*.tar.gz
+*.zip
+
+# Node.js build artifacts
+agent/node_modules/
+agent/dist/
+
+# OS & editor files
+.DS_Store
+Thumbs.db
+*.swp

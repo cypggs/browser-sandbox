@@ -1,0 +1,79 @@
+services:
+  browser:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: browser-sandbox-browser:latest
+    container_name: browser-sandbox-browser
+    restart: unless-stopped
+    shm_size: "2gb"
+    stop_grace_period: 20s
+    # SYS_ADMIN allows Chromium's namespace sandbox to run as non-root WITHOUT --no-sandbox
+    cap_add:
+      - SYS_ADMIN
+    networks:
+      - sandbox-net
+    environment:
+      DISPLAY: ":99"
+      SCREEN_WIDTH: "${SCREEN_WIDTH:-1920}"
+      SCREEN_HEIGHT: "${SCREEN_HEIGHT:-1080}"
+      SCREEN_DEPTH: "${SCREEN_DEPTH:-24}"
+      NOVNC_PORT: "6080"
+      CDP_PORT: "9222"
+      CDP_PROXY_PORT: "9223"
+      VNC_PASSWORD: "${VNC_PASSWORD:?VNC_PASSWORD must be set in .env}"
+      TZ: "${TZ:-Asia/Shanghai}"
+    ports:
+      # Bind strictly to host loopback; reverse-proxied by host Nginx over HTTPS
+      - "127.0.0.1:6080:6080"
+      # Localhost-only CDP access for local Playwright scripts; never expose publicly
+      - "127.0.0.1:9222:9223"
+    volumes:
+      - ./data/chrome-profile:/data/chrome-profile
+      - ./data/downloads:/data/downloads
+      - ./data/screenshots:/data/screenshots
+      - ./logs/browser:/logs
+      - ./config:/app/config:ro
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  agent:
+    build:
+      context: ./agent
+      dockerfile: Dockerfile
+    image: browser-sandbox-agent:latest
+    container_name: browser-sandbox-agent
+    restart: unless-stopped
+    networks:
+      - sandbox-net
+    depends_on:
+      browser:
+        condition: service_healthy
+    ports:
+      # Bind strictly to host loopback; reverse-proxied by host Nginx /api/ over HTTPS
+      - "127.0.0.1:3800:3800"
+    environment:
+      NODE_ENV: "production"
+      AGENT_HOST: "0.0.0.0"
+      AGENT_PORT: "3800"
+      CDP_URL: "http://browser:9223"
+      API_TOKEN: "${API_TOKEN:?API_TOKEN must be set in .env}"
+      DOWNLOADS_DIR: "/data/downloads"
+      SCREENSHOTS_DIR: "/data/screenshots"
+      TZ: "${TZ:-Asia/Shanghai}"
+    volumes:
+      - ./data/downloads:/data/downloads
+      - ./data/screenshots:/data/screenshots
+      - ./logs/agent:/logs
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+networks:
+  sandbox-net:
+    driver: bridge
